@@ -4,10 +4,11 @@
 #include <string>
 #include <fstream>
 
+#include "../memory.h"
+
 using namespace std;
 
 Memory* memory;
-CodeGenerator* codeGenerator;
 
 extern FILE* yyin;
 extern int yylineno;
@@ -53,10 +54,10 @@ program
 ;
 
 declarations
-: declarations ',' pidentifier                  {}
-| declarations ',' pidentifier'('num':'num')'   {}
-| pidentifier                                   {}
-| pidentifier'('num':'num')'                    {}
+: declarations ',' pidentifier                  {memory->declare_variable(*$3);}
+| declarations ',' pidentifier'('num':'num')'   {memory->declare_array(*$3, $5, $7);}
+| pidentifier                                   {memory->declare_variable(*$1);}
+| pidentifier'('num':'num')'                    {memory->declare_array(*$1, $3, $5);}
 ;
 
 commands
@@ -126,7 +127,8 @@ int main(int argc, char* argv[]){
         }
         try
         {
-            /*memory = new Memory();
+            memory = new Memory();
+            /*
             code = new CodeWriter()
             codeGenerator = new CodeGenerator();
             yyparse();

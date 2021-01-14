@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string>
 
+#include "../memory.h"
 #include "parser.tab.hpp"
 
 using namespace std;
