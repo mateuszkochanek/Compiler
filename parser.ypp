@@ -1,0 +1,143 @@
+%{
+#include <stdio.h>
+#include <iostream>
+#include <string>
+#include <fstream>
+
+using namespace std;
+
+Memory* memory;
+CodeGenerator* codeGenerator;
+
+extern FILE* yyin;
+extern int yylineno;
+
+int yylex (void);
+void yyerror (string);
+%}
+
+%union values{
+    unsigned long long num;
+    std::string* pid;
+
+}
+
+%start program
+%token DECLARE MY_BEGIN END
+%token IF THEN ELSE ENDIF
+%token WHILE DO ENDWHILE
+%token REPEAT UNTIL
+%token FOR FROM TO DOWNTO ENDFOR
+%token IS EQ DIF LT GT EQLT EQGT
+%token READ WRITE
+
+%token <pid> pidentifier
+%token <num> num
+
+// helper
+%type value
+%type identifier
+%type command
+%type commands
+%type condition;
+%type expression;
+
+// arithmetic operations
+%left SUB ADD
+%left MUL DIV MOD
+
+%%
+program
+: DECLARE declarations MY_BEGIN commands END    {}
+| MY_BEGIN commands END                         {}
+;
+
+declarations
+: declarations ',' pidentifier                  {}
+| declarations ',' pidentifier'('num':'num')'   {}
+| pidentifier                                   {}
+| pidentifier'('num':'num')'                    {}
+;
+
+commands
+: commands command  {}
+| command           {}
+;
+
+command
+: identifier IS expression ';'                                  {}
+| IF condition THEN commands ELSE commands ENDIF                {}
+| IF condition THEN commands ENDIF                              {}
+| WHILE condition DO commands ENDWHILE                          {}
+| REPEAT commands UNTIL condition ';'                           {}
+| FOR pidentifier FROM value TO value DO commands ENDFOR        {}
+| FOR pidentifier FROM value DOWNTO value DO commands ENDFOR    {}
+| READ identifier ';'                                           {}
+| WRITE value ';'                                               {}
+;
+
+expression
+: value                 {}
+| value ADD value       {}
+| value SUB value       {}
+| value MUL value       {}
+| value DIV value       {}
+| value MOD value       {}
+;
+
+condition
+: value EQ value        {}
+| value DIF value       {}
+| value LT value        {}
+| value GT value        {}
+| value EQGT value      {}
+| value EQLT value      {}
+;
+
+value
+: num           {}
+| identifier    {}
+;
+
+identifier
+: pidentifier                   {}
+| pidentifier'('pidentifier')'  {}
+| pidentifier'('num')'          {}
+;
+%%
+
+void yyerror(std::string s){
+    cout << "Error in line " << yylineno << ": "  << s << endl;
+    exit(1);
+    return;
+}
+
+int main(int argc, char* argv[]){
+    if (argc < 3)
+    {
+        cout << "Not enough arguments" << endl;
+        return 1;
+    } else {
+        yyin = fopen(argv[1], "r");
+        if (yyin == NULL)
+        {
+            cout << "File " << argv[1] << " does not exist" << endl;
+            return 1;
+        }
+        try
+        {
+            /*memory = new Memory();
+            code = new CodeWriter()
+            codeGenerator = new CodeGenerator();
+            yyparse();
+            codeGenerator->generate_machine_code();
+            codeGenerator->write_output(argv[2]);*/
+            yyparse();
+        }
+        catch (string error)
+        {
+            yyerror(error);
+        }
+    }
+    return 0;
+}
