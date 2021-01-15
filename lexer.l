@@ -3,6 +3,7 @@
 #include <string>
 
 #include "../memory.h"
+#include "../tokens.h"
 #include "parser.tab.hpp"
 
 using namespace std;

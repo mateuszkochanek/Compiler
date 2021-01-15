@@ -13,9 +13,10 @@ enum eVariableType {
 };
 
 struct Variable {
+    // Single variable declaration
     Variable(uint tAddress, std::string tPid) : adress(tAddress),
                                                 pid(std::move(tPid)) { variableType = eVariableType::SINGLE; }
-
+    // Array variable declaration
     Variable(uint tAddress, std::string tPid, uint tStart, uint tEnd) : adress(tAddress), pid(std::move(tPid)),
                                                                         start(tStart),
                                                                         end(tEnd) { variableType = eVariableType::ARRAY; }
@@ -25,12 +26,12 @@ struct Variable {
     std::string pid;
 
     // needed for arrays
-    uint start{};
-    uint end{};
+    uint start{0};
+    uint end{0};
 
     // needed for error checks
-    bool bInitialized{};
-    bool bDeclared{};
+    bool bInitialized{false};
+    bool bDeclared{true};
 };
 
 #endif //CULTIVATED_COMPILER_VARIABLE_H
