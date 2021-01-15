@@ -13,6 +13,34 @@ void CodeWriter::writeOutput(const std::string& tFileName) {
     output.close();
 }
 
+void CodeWriter::loadValueToRegister(std::string tRegName, uint value) {
+    std::vector<std::string> value_instructions;
+    this->reset(tRegName);
+    if (value > 6) {
+        value--;
+        value_instructions.emplace_back("INC");
+        while (value > 0) {
+            if (value % 2 == 0) {
+                value /= 2;
+                value_instructions.emplace_back("SHL");
+            } else {
+                value--;
+                value_instructions.emplace_back("INC");
+            }
+        }
+        for (int i = value_instructions.size() - 1; i >= 0; i--) {
+            if (value_instructions[i] == "INC") {
+                this->inc(tRegName);
+            } else {
+                this->shl(tRegName);
+            }
+        }
+    } else {
+        for (int i = 0; i < value; i++) {
+            this->inc(tRegName);
+        }
+    }
+}
 
 // Istruction generation
 void CodeWriter::get(std::string tRegName) {

@@ -36,9 +36,15 @@ class Memory {
 public:
     Memory();
 
+    Variable *getVariable(std::string tVarName);
+
+    void checkIfDeclared(std::string tVarName);
+
     void declareVariable(std::string pid);
 
     void declareArray(std::string pid, uint start, uint end);
+
+    void declareConstant(std::string tPid, uint value);
 
     void freeRegisters();
 

@@ -5,6 +5,10 @@
 #ifndef CULTIVATED_COMPILER_TOKENS_H
 #define CULTIVATED_COMPILER_TOKENS_H
 
+#include "memory.h"
+
+extern Memory *memory;
+
 enum eIdentifier {
     VARIABLE_IDENTIFIER, VARIABLE_ARRAY_IDENTIFIER, NUMBER_ARRAY_IDENTIFIER
 };
@@ -15,31 +19,45 @@ enum eValue {
 
 struct Identifier {
     // Identifier for single fariables
-    explicit Identifier(std::string tVarPid) : varPid(tVarPid) { type = eIdentifier::VARIABLE_IDENTIFIER; };
+    explicit Identifier(std::string tVarPid) {
+        this->type = eIdentifier::VARIABLE_IDENTIFIER;
+        this->variable = memory->getVariable(tVarPid);
+    };
 
     // Identifier for arrays with variables as index
-    Identifier(std::string tArrayPid, std::string tVarPid) : arrayPid(tArrayPid),
-                                                             varPid(tVarPid) { type = eIdentifier::VARIABLE_ARRAY_IDENTIFIER; };
+    Identifier(std::string tArrayPid, std::string tVarPid) {
+        this->type = eIdentifier::VARIABLE_ARRAY_IDENTIFIER;
+        this->array = memory->getVariable(tArrayPid);
+        this->variable = memory->getVariable(tVarPid);
+    };
 
     //Identifier for arrays with numbers as index
-    Identifier(std::string tArrayPid, uint tIndex) : arrayPid(tArrayPid),
-                                                     index(tIndex) { type = eIdentifier::NUMBER_ARRAY_IDENTIFIER; };
+    Identifier(std::string tArrayPid, uint tIndex) {
+        this->type = eIdentifier::NUMBER_ARRAY_IDENTIFIER;
+        this->array = memory->getVariable(tArrayPid);
+        this->index = tIndex;
+    };
 
     eIdentifier type;
-    std::string varPid{""};
-    std::string arrayPid{""};
+    Variable *variable;
+    Variable *array;
     uint index{0};
 };
 
 struct Value {
-    // Value for number value input
-    explicit Value(uint tValue) : value(tValue) { type = eValue::NUMBER_VALUE; };
+    // Value for number numValue input. Its the only place where we create constants. We only reserve memory for it here.
+    explicit Value(uint tValue) : numValue(tValue) {
+        this->type = eValue::NUMBER_VALUE;
+        std::string constPid = std::to_string(tValue);
+        memory->declareConstant(constPid, tValue);
+        this->identifier = new Identifier(constPid);
+    };
 
     // Value for Identifier input
-    explicit Value(Identifier *tIdentifier) : identifier(tIdentifier) { type = eValue::IDENTIFIER_VALUE; };
+    explicit Value(Identifier *tIdentifier) : identifier(tIdentifier) { this->type = eValue::IDENTIFIER_VALUE; };
 
     eValue type;
-    uint value{0};
+    uint numValue{0};
     Identifier *identifier{};
 };
 

@@ -17,6 +17,17 @@ void Memory::createRegisters() {
     registers["f"] = new Register("f");
 }
 
+Variable *Memory::getVariable(std::string tVarName) {
+    checkIfDeclared(tVarName);
+    return symbolTable[tVarName];
+}
+
+void Memory::checkIfDeclared(std::string tVarName) {
+    if (symbolTable.find(tVarName) == symbolTable.end()) {
+        throw tVarName + " was not declared";
+    }
+}
+
 void Memory::declareVariable(std::string pid) {
     if (symbolTable.find(pid) != symbolTable.end()) {
         throw pid + " is already declared";
@@ -31,6 +42,13 @@ void Memory::declareArray(std::string tPid, uint tStart, uint tEnd) {
     }
     this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, tStart, tEnd);
     this->memoryAddresses += (tEnd - tStart) + 1;
+}
+
+void Memory::declareConstant(std::string tPid, uint value) {
+    if (symbolTable.find(tPid) == symbolTable.end()) {
+        this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, value);
+        this->memoryAddresses++;
+    }
 }
 
 void Memory::freeRegisters() {
@@ -51,3 +69,4 @@ Register *Memory::getFreeRegister() {
     }
     throw "no more registers rry"; //TODO jezeli wszystkie pełne wyrzucać cos do zmiennej w pamięci? ale nie powinno tak być
 }
+

@@ -85,8 +85,8 @@ command
 | REPEAT commands UNTIL condition ';'                           {}
 | FOR pidentifier FROM value TO value DO commands ENDFOR        {}
 | FOR pidentifier FROM value DOWNTO value DO commands ENDFOR    {}
-| READ identifier ';'                                           {}
-| WRITE value ';'                                               {}
+| READ identifier ';'                                           {$$ = new ReadCommand($2);}
+| WRITE value ';'                                               {$$ = new WriteCommand($2);}
 ;
 
 expression

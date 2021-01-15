@@ -32,6 +32,8 @@ public:
 
     void writeOutput(const std::string& tFileName);
 
+    void loadValueToRegister(std::string tRegisterName, uint value);
+
     void get(std::string tRegName);
 
     void put(std::string tRegName);
@@ -66,7 +68,6 @@ public:
 private:
     std::vector<Instruction *> instructionList;
     uint instructionCount{0};
-
 };
 
 
