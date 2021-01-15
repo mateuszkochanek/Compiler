@@ -9,37 +9,71 @@
 #include "code_writer.h"
 #include "tokens.h"
 
-extern Memory* memory;
-extern CodeWriter* code;
+class Expression;
+
+
+extern Memory *memory;
+extern CodeWriter *code;
 
 //____________________________Commands_______________________________
 class Command {
 public:
-    virtual void generateInstructions(){throw "in virtual gen Instructions";}
-protected:
-    void loadIdentifierAddress(Register *addressRegister) const;
-    void checkIfInitialized();
-    Identifier* identifier;
-    Value* value;
+    virtual void generateInstructions() { throw "in virtual method od Command"; }
+
+    static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier);
+
+    static void checkIfInitialized(Value *tValue);
+
 };
 
-class ReadCommand: public Command{
+class ReadCommand : public Command {
 public:
-    explicit ReadCommand(Identifier* tIdentifier){this->identifier = tIdentifier;};
+    explicit ReadCommand(Identifier *tIdentifier) { this->identifier = tIdentifier; };
+
     void generateInstructions() override;
+
+private:
+    Identifier *identifier;
 };
 
-class WriteCommand: public Command{
+class WriteCommand : public Command {
 public:
-    explicit WriteCommand(Value* tValue){this->value = tValue; this->identifier = tValue->identifier;};
+    explicit WriteCommand(Value *tValue) { this->value = tValue; };
+
     void generateInstructions() override;
+
+private:
+    Value *value;
 };
 
+class IsCommand : public Command {
+public:
+    explicit IsCommand(Identifier *tIdentifier, Expression *tExpression) {
+        this->identifier = tIdentifier;
+        this->expression = tExpression;
+    };
+
+    void generateInstructions() override;
+
+private:
+    Identifier *identifier;
+    Expression *expression;
+};
 
 
 //___________________________Expressions______________________________
 class Expression {
+public:
+    virtual void generateExpressionValue(Register *valueRegister) { throw "in virtual method of Expression"; };
+};
 
+class ValueExpression : public Expression {
+    explicit ValueExpression(Value *tValue) : value(tValue) {};
+
+    void generateExpressionValue(Register *valueRegister) override;
+
+private:
+    Value *value;
 };
 
 //____________________________Conditions_______________________________
