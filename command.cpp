@@ -35,7 +35,9 @@ void ReadCommand::generateInstructions() {
     Register *addressRegister = memory->getFreeRegister();
     loadIdentifierAddress(addressRegister);
     code->get(addressRegister->getName()); // we save input to address we got
-    identifier->variable->bInitialized = true; // we set variable to initialized
+    if(identifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
+        identifier->variable->bInitialized = true;
+    } // we set variable to initialized
     memory->freeRegisters();
 }
 
