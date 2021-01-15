@@ -20,3 +20,12 @@ void AddExpression::generateExpressionValue(Register *resultRegister) {
     Command::loadValueToRegister(valueRegister, this->value2);
     code->add(resultRegister->getName(), valueRegister->getName());
 }
+
+
+//____________________________SubExpression________________________________
+void SubExpression::generateExpressionValue(Register *resultRegister) {
+    Register* valueRegister = memory->getFreeRegister();
+    Command::loadValueToRegister(resultRegister, this->value1);
+    Command::loadValueToRegister(valueRegister, this->value2);
+    code->sub(resultRegister->getName(), valueRegister->getName());
+}

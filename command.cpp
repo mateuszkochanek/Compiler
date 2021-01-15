@@ -11,6 +11,9 @@ void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIde
         code->loadNumberToRegister(tAddressRegister->getName(), tIdentifier->variable->address);
     } else if (tIdentifier->type == eIdentifier::NUMBER_ARRAY_IDENTIFIER) {
         uint cellAdress = tIdentifier->array->address;
+        if(tIdentifier->index < tIdentifier->array->start || tIdentifier->index > tIdentifier->array->end){
+            throw tIdentifier->array->pid + "wrong array range";
+        }
         cellAdress += tIdentifier->index - tIdentifier->array->start;
         code->loadNumberToRegister(tAddressRegister->getName(), cellAdress);
     } else {

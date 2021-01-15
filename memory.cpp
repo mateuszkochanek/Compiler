@@ -51,7 +51,7 @@ void Memory::declareConstant(std::string tPid, uint value) {
     }
 }
 
-void Memory::freeRegisters() {
+void Memory::freeRegisters() { // TODO i think i should do freeing only specified registers
     for (auto &it : registers) {
         if (it.second->isFull()) {
             it.second->freeRegister();
