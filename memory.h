@@ -14,16 +14,16 @@ class Memory {
 public:
     Memory();
 
-    void declare_variable(std::string pid);
+    void declareVariable(std::string pid);
 
-    void declare_array(std::string pid, uint start, uint end);
+    void declareArray(std::string pid, uint start, uint end);
 
 
 private:
-    void create_registers();
+    void createRegisters();
 
     uint memoryAddresses{0};
-    std::map<std::string, Variable *> symbol_table;
+    std::map<std::string, Variable *> symbolTable;
 };
 
 

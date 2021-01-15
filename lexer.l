@@ -3,6 +3,9 @@
 #include <string>
 
 #include "../memory.h"
+#include "../code_generator.h"
+#include "../code_writer.h"
+#include "../instruction_generators.h"
 #include "../tokens.h"
 #include "parser.tab.hpp"
 

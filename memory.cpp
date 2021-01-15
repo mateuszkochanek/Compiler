@@ -8,22 +8,22 @@ Memory::Memory() {
 
 }
 
-void Memory::create_registers() {
+void Memory::createRegisters() {
 
 }
 
-void Memory::declare_variable(std::string tPid) {
-    if (symbol_table.find(tPid) != symbol_table.end()) {
-        throw tPid + " is already declared";
+void Memory::declareVariable(std::string pid) {
+    if (symbolTable.find(pid) != symbolTable.end()) {
+        throw pid + " is already declared";
     }
-    this->symbol_table[tPid] = new Variable(this->memoryAddresses, tPid);
+    this->symbolTable[pid] = new Variable(this->memoryAddresses, pid);
     this->memoryAddresses++;
 }
 
-void Memory::declare_array(std::string tPid, uint tStart, uint tEnd) {
-    if (symbol_table.find(tPid) != symbol_table.end()) {
+void Memory::declareArray(std::string tPid, uint tStart, uint tEnd) {
+    if (symbolTable.find(tPid) != symbolTable.end()) {
         throw tPid + " is already declared";
     }
-    this->symbol_table[tPid] = new Variable(this->memoryAddresses, tPid, tStart, tEnd);
+    this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, tStart, tEnd);
     this->memoryAddresses += (tEnd - tStart) + 1;
 }
