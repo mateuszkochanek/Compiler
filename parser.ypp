@@ -144,6 +144,7 @@ int main(int argc, char* argv[]){
             code = new CodeWriter();
             yyparse();
             codeGen->generateMachineCode();
+            code->halt(); // TODO put it inside code generator somehow
             code->writeOutput(argv[2]);
         }
         catch (string error)
