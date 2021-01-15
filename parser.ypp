@@ -143,8 +143,8 @@ int main(int argc, char* argv[]){
             codeGen = new CodeGenerator();
             code = new CodeWriter();
             yyparse();
-            //codeGen->generateMachineCode();
-            //code->writeOutput(argv[2]);
+            codeGen->generateMachineCode();
+            code->writeOutput(argv[2]);
         }
         catch (string error)
         {

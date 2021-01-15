@@ -4,6 +4,7 @@
 
 #ifndef CULTIVATED_COMPILER_MEMORY_H
 #define CULTIVATED_COMPILER_MEMORY_H
+
 #include <string>
 #include <map>
 
