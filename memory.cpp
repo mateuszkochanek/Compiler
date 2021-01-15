@@ -5,11 +5,16 @@
 #include "memory.h"
 
 Memory::Memory() {
-
+    this->createRegisters();
 }
 
 void Memory::createRegisters() {
-
+    registers["a"] = new Register("a");
+    registers["b"] = new Register("b");
+    registers["c"] = new Register("c");
+    registers["d"] = new Register("d");
+    registers["e"] = new Register("e");
+    registers["f"] = new Register("f");
 }
 
 void Memory::declareVariable(std::string pid) {
@@ -26,4 +31,23 @@ void Memory::declareArray(std::string tPid, uint tStart, uint tEnd) {
     }
     this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, tStart, tEnd);
     this->memoryAddresses += (tEnd - tStart) + 1;
+}
+
+void Memory::freeRegisters() {
+    for (auto &it : registers) {
+        if (it.second->isFull()) {
+            it.second->freeRegister();
+            //reset(it.second);
+        }
+    }
+}
+
+Register *Memory::getFreeRegister() {
+    for (auto &it : registers) {
+        if (!(it.second->isFull())) {
+            it.second->setFull(true);
+            return it.second;
+        }
+    }
+    throw "no more registers rry"; //TODO jezeli wszystkie pełne wyrzucać cos do zmiennej w pamięci? ale nie powinno tak być
 }
