@@ -90,7 +90,7 @@ command
 ;
 
 expression
-: value                 {$$ = new ValueExpression()}
+: value                 {$$ = new ValueExpression($1);}
 | value ADD value       {}
 | value SUB value       {}
 | value MUL value       {}

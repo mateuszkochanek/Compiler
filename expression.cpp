@@ -9,5 +9,5 @@
 
 //___________________________ValueExpression_______________________________
 void ValueExpression::generateExpressionValue(Register *valueRegister) {
-
+    Command::loadValueToRegister(valueRegister, this->value);
 }

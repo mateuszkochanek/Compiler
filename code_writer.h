@@ -32,7 +32,7 @@ public:
 
     void writeOutput(const std::string& tFileName);
 
-    void loadValueToRegister(std::string tRegisterName, uint value);
+    void loadNumberToRegister(std::string tRegisterName, uint value);
 
     void get(std::string tRegName);
 

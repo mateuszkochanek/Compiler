@@ -13,7 +13,7 @@ void CodeWriter::writeOutput(const std::string& tFileName) {
     output.close();
 }
 
-void CodeWriter::loadValueToRegister(std::string tRegName, uint value) {
+void CodeWriter::loadNumberToRegister(std::string tRegName, uint value) {
     std::vector<std::string> value_instructions;
     this->reset(tRegName);
     if (value > 6) {

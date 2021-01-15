@@ -22,6 +22,8 @@ public:
 
     static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier);
 
+    static void loadValueToRegister(Register *tAddressRegister, Value *tValue);
+
     static void checkIfInitialized(Value *tValue);
 
 };
@@ -68,6 +70,7 @@ public:
 };
 
 class ValueExpression : public Expression {
+public:
     explicit ValueExpression(Value *tValue) : value(tValue) {};
 
     void generateExpressionValue(Register *valueRegister) override;
