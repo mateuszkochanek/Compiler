@@ -5,8 +5,9 @@
 
 //______________________________Command_________________________________
 // TODO maybe make it static with identifier as param? if so change WriteCommand constructor
-void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier) {
+void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool checkInitialized) {
     if (tIdentifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
+        if(checkInitialized){Command::checkIfInitialized(tIdentifier);};
         code->loadNumberToRegister(tAddressRegister->getName(), tIdentifier->variable->address);
     } else if (tIdentifier->type == eIdentifier::NUMBER_ARRAY_IDENTIFIER) {
         uint cellAdress = tIdentifier->array->address;
@@ -30,17 +31,16 @@ void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIde
 void Command::loadValueToRegister(Register *tValueRegister, Value *tValue) {
     Register* adressRegister = memory->getFreeRegister();
     if (tValue->type == eValue::IDENTIFIER_VALUE) { // numValue with some variable
-        checkIfInitialized(tValue);
-        Command::loadIdentifierAddress(adressRegister, tValue->identifier);
+        Command::loadIdentifierAddress(adressRegister, tValue->identifier, true);
         code->load(tValueRegister->getName(), adressRegister->getName());
     } else { // numValue with a constant variable
         if (tValue->identifier->variable->bInitialized) { //TODO check when its worth it to save constant instead of gen it again
-            Command::loadIdentifierAddress(adressRegister, tValue->identifier);
+            Command::loadIdentifierAddress(adressRegister, tValue->identifier, true);
             code->load(tValueRegister->getName(), adressRegister->getName());
         } else { // if const was never created, create, save it in memory and load it for our use
             code->loadNumberToRegister(tValueRegister->getName(), tValue->numValue); // we load number value to our register
-            Command::loadIdentifierAddress(adressRegister, tValue->identifier); // we load constant address to our register
-            code->store(adressRegister->getName(), tValueRegister->getName()); // we store our value in address from addressREgister
+            Command::loadIdentifierAddress(adressRegister, tValue->identifier, false); // we load constant address to our register
+            code->store(tValueRegister->getName(), adressRegister->getName()); // we store our value in address from addressREgister
             tValue->identifier->variable->bInitialized = true; // constant is initialized
             // our value is still in tValueRegister
         }
@@ -48,16 +48,16 @@ void Command::loadValueToRegister(Register *tValueRegister, Value *tValue) {
 }
 
 
-void Command::checkIfInitialized(Value *tValue) {
-    if (!(tValue->identifier->variable->bInitialized)) {
-        throw tValue->identifier->variable->pid + "was not initialized";
+void Command::checkIfInitialized(Identifier *tIdentifier) {
+    if (!(tIdentifier->variable->bInitialized)) {
+        throw tIdentifier->variable->pid + "was not initialized";
     }
 }
 
 //____________________________ReadCommand_______________________________
 void ReadCommand::generateInstructions() {
     Register *addressRegister = memory->getFreeRegister();
-    Command::loadIdentifierAddress(addressRegister, this->identifier);
+    Command::loadIdentifierAddress(addressRegister, identifier, false);
     code->get(addressRegister->getName()); // we save input to address we got
     if (identifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
         identifier->variable->bInitialized = true;
@@ -70,15 +70,15 @@ void ReadCommand::generateInstructions() {
 void WriteCommand::generateInstructions() {
     Register *addressRegister = memory->getFreeRegister();
     if (value->type == eValue::IDENTIFIER_VALUE) { // numValue with some variable
-        Command::loadIdentifierAddress(addressRegister, this->value->identifier);
+        Command::loadIdentifierAddress(addressRegister, this->value->identifier, true);
     } else { // numValue with a constant variable
         if (value->identifier->variable->bInitialized) {
             Command::loadIdentifierAddress(addressRegister,
-                                           this->value->identifier); // if constant was created before, load its address
+                                           this->value->identifier, false); // if constant was created before, load its address
         } else { // if const was never created, create and save it in memory
             Register *helperRegister = memory->getFreeRegister();
             code->loadNumberToRegister(helperRegister->getName(), value->numValue);
-            Command::loadIdentifierAddress(addressRegister, this->value->identifier);
+            Command::loadIdentifierAddress(addressRegister, this->value->identifier, false);
             code->store(helperRegister->getName(), addressRegister->getName());
             value->identifier->variable->bInitialized = true; // constant is initialized
         }
@@ -91,15 +91,16 @@ void WriteCommand::generateInstructions() {
 //_____________________________IsCommand________________________________
 void IsCommand::generateInstructions() {
     // generate expression value into specified register
-    Register *valueRegister = memory->getFreeRegister();
-    expression->generateExpressionValue(valueRegister);
+    Register *resultRegister = memory->getFreeRegister();
+    expression->generateExpressionValue(resultRegister);
     memory->freeRegisters();
+    resultRegister->setFull(true);
     // save this value into addres in our value in IsCommand
-    valueRegister->setFull(true);
     Register *addressRegister = memory->getFreeRegister();
-    Command::loadIdentifierAddress(addressRegister, this->identifier);
-    code->store(valueRegister->getName(), addressRegister->getName());
+    Command::loadIdentifierAddress(addressRegister, identifier, false);
+    code->store(resultRegister->getName(), addressRegister->getName());
     if (identifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
         identifier->variable->bInitialized = true;
     } // we set variable to initialized
+    memory->freeRegisters();
 }

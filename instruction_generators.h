@@ -20,11 +20,11 @@ class Command {
 public:
     virtual void generateInstructions() { throw "in virtual method od Command"; }
 
-    static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier);
+    static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool checkInitialized);
 
     static void loadValueToRegister(Register *tAddressRegister, Value *tValue);
 
-    static void checkIfInitialized(Value *tValue);
+    static void checkIfInitialized(Identifier *tIdentifier);
 
 };
 
@@ -66,17 +66,28 @@ private:
 //___________________________Expressions______________________________
 class Expression {
 public:
-    virtual void generateExpressionValue(Register *valueRegister) { throw "in virtual method of Expression"; };
+    virtual void generateExpressionValue(Register *resultRegister) { throw "in virtual method of Expression"; };
 };
 
 class ValueExpression : public Expression {
 public:
     explicit ValueExpression(Value *tValue) : value(tValue) {};
 
-    void generateExpressionValue(Register *valueRegister) override;
+    void generateExpressionValue(Register *resultRegister) override;
 
 private:
     Value *value;
+};
+
+class AddExpression : public Expression {
+public:
+    explicit AddExpression(Value *tValue1, Value *tValue2) : value1(tValue1),value2(tValue2) {};
+
+    void generateExpressionValue(Register *resultRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
 };
 
 //____________________________Conditions_______________________________

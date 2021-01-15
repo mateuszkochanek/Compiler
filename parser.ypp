@@ -91,7 +91,7 @@ command
 
 expression
 : value                 {$$ = new ValueExpression($1);}
-| value ADD value       {}
+| value ADD value       {$$ = new AddExpression($1, $3);}
 | value SUB value       {}
 | value MUL value       {}
 | value DIV value       {}

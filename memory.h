@@ -25,7 +25,7 @@ public:
 
     void setName(const std::string &tName) { Register::name = tName; }
 
-    void setFull(bool tFull) { Register::full = tFull; }
+    void setFull(bool tFull) { this->full = tFull; }
 
 private:
     std::string name;
