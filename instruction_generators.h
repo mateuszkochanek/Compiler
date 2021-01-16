@@ -123,6 +123,17 @@ private:
     Value *value2;
 };
 
+class ModExpression : public Expression {
+public:
+    explicit ModExpression(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateExpressionValue(Register *resultRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
 //____________________________Conditions_______________________________
 class Condition {
 

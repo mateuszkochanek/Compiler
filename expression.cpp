@@ -121,3 +121,68 @@ void DivExpression::generateExpressionValue(Register *resultRegister) {
         code->jzero(multiplyRegister->getName(), 2);
         code->jump(-12);
 }
+
+
+//____________________________DivExpression________________________________
+void ModExpression::generateExpressionValue(Register *dividentRegister) { // this register has our reminder
+    Register *resultRegister = memory->getFreeRegister(); // this is register with relulst of divide
+    Register *divisorRegister = memory->getFreeRegister();
+    Register *multiplyRegister = memory->getFreeRegister();
+    Command::loadValueToRegister(dividentRegister, this->value1);
+    Command::loadValueToRegister(divisorRegister, this->value2);
+    Register *ifConditionRegister = memory->getFreeRegister();
+    Register *whileConditionRegister = memory->getFreeRegister();
+    code->reset(resultRegister->getName());
+    //if divisor = 0 finish (result is also 0 so its good)
+    code->jzero(divisorRegister->getName(), 24);
+    // else do division
+    // preparing registers
+    code->reset(multiplyRegister->getName());
+    code->inc(multiplyRegister->getName());
+    code->reset(ifConditionRegister->getName());
+
+
+    //while(dividend - divisor > 0) czyli jezeli wynik = 0 top przerywamy
+    //{
+    //    code->shl(divisorRegister->getName());
+    //    code->shl(multiplyRegister->getName());
+    //}
+    code->reset(whileConditionRegister->getName());
+    code->add(whileConditionRegister->getName(), dividentRegister->getName());
+    code->sub(whileConditionRegister->getName(), divisorRegister->getName());
+    code->jzero(whileConditionRegister->getName(), 4);
+    code->shl(divisorRegister->getName());
+    code->shl(multiplyRegister->getName());
+    code->jump(-6);
+
+
+    //do {
+    //    if( 0 >= divisor - divident)
+    //    {
+    //          divident = divident - divisor; FIRST PART
+    //          result = result + multiple;
+    //          divisor = divisor >> 1; // Divide by two.
+    //          multiple       = multiple       >> 1;
+    //    } else {
+    //          divisor = divisor >> 1; // Divide by two. SECOND PART
+    //          multiple       = multiple       >> 1;
+    //    }
+    //} while(multiple != 0);
+
+    code->reset(ifConditionRegister->getName());
+    code->add(ifConditionRegister->getName(), divisorRegister->getName());
+    code->sub(ifConditionRegister->getName(), dividentRegister->getName());
+    code->jzero(ifConditionRegister->getName(), 4);
+    // if it is not 0
+    code->shr(divisorRegister->getName()); //second part
+    code->shr(multiplyRegister->getName());
+    code->jump(5);
+    // else
+    code->sub(dividentRegister->getName(), divisorRegister->getName());
+    code->add(resultRegister->getName(), multiplyRegister->getName());
+    code->shr(divisorRegister->getName()); // first part
+    code->shr(multiplyRegister->getName());
+    code->jzero(multiplyRegister->getName(), 3);
+    code->jump(-12);
+    code->reset(dividentRegister->getName()); // we jump here if divider is 0, we have to set this (our result) to 0
+}
