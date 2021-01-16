@@ -113,3 +113,24 @@ void IsCommand::generateInstructions() {
     } // we set variable to initialized
     memory->freeRegisters();
 }
+
+
+//_____________________________IfCommand________________________________
+void IfCommand::generateInstructions() {
+
+    Register *conditionRegister = memory->getFreeRegister();
+    condition->generateConditionValue(conditionRegister);
+    int instructionCoutBeforeCommands = code->getInstructionCount();
+    memory->freeRegisters();
+    int size = this->commandList->size();
+    for (int i = 0; i < size; i++) {
+        (*commandList)[i]->generateInstructions();
+    }
+    int instructionCoutAfterCommands = code->getInstructionCount();
+    code->putInstructionAtIndex(new Instruction("JZERO", conditionRegister->getName(), std::to_string(2)),
+                                instructionCoutBeforeCommands);
+    code->putInstructionAtIndex(
+            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCoutBeforeCommands)),
+            instructionCoutBeforeCommands+1);
+    memory->freeRegisters();
+}

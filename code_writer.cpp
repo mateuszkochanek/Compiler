@@ -43,6 +43,11 @@ void CodeWriter::loadNumberToRegister(std::string tRegName, uint value) {
 }
 
 // Istruction generation
+void CodeWriter::putInstructionAtIndex(Instruction *instruction, uint index) {
+    this->instructionList.insert(instructionList.begin()+index, instruction);
+    this->instructionCount++;
+}
+
 void CodeWriter::get(std::string tRegName) {
     this->instructionList.push_back(new Instruction("GET", tRegName));
     this->instructionCount++;

@@ -5,15 +5,20 @@
 #ifndef CULTIVATED_COMPILER_INSTRUCTION_GENERATORS_H
 #define CULTIVATED_COMPILER_INSTRUCTION_GENERATORS_H
 
+#include <vector>
+
 #include "memory.h"
 #include "code_writer.h"
 #include "tokens.h"
 
+class Command;
 class Expression;
-
+class Condition;
 
 extern Memory *memory;
 extern CodeWriter *code;
+
+typedef std::vector<Command *> CommandList;
 
 //____________________________Commands_______________________________
 class Command {
@@ -60,6 +65,20 @@ public:
 private:
     Identifier *identifier;
     Expression *expression;
+};
+
+class IfCommand : public Command {
+public:
+    explicit IfCommand(Condition *tCondition, CommandList *tCommandList) {
+        this->condition = tCondition;
+        this->commandList = tCommandList;
+    };
+
+    void generateInstructions() override;
+
+private:
+    Condition *condition;
+    CommandList *commandList;
 };
 
 
@@ -135,8 +154,20 @@ private:
 };
 
 //____________________________Conditions_______________________________
-class Condition {
+class Condition { ;
+public:
+    virtual void generateConditionValue(Register *resultRegister) { throw "in virtual method of Condition"; }
+};
 
+class EqualCondition: public Condition {
+public:
+    explicit EqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateConditionValue(Register *conditionRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
 };
 
 #endif //CULTIVATED_COMPILER_INSTRUCTION_GENERATORS_H

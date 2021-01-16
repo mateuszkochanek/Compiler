@@ -34,6 +34,8 @@ public:
 
     void loadNumberToRegister(std::string tRegisterName, uint value);
 
+    void putInstructionAtIndex(Instruction* instruction, uint index);
+
     void get(std::string tRegName);
 
     void put(std::string tRegName);

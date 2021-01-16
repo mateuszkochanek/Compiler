@@ -9,8 +9,6 @@
 #include <string>
 #include "instruction_generators.h"
 
-typedef std::vector<Command *> CommandList;
-
 class CodeGenerator {
 public:
     CodeGenerator() = default;
