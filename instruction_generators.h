@@ -203,4 +203,26 @@ private:
     Value *value2;
 };
 
+class LessEqualCondition: public Condition {
+public:
+    explicit LessEqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateConditionValue(Register *conditionRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
+class GreaterEqualCondition: public Condition {
+public:
+    explicit GreaterEqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateConditionValue(Register *conditionRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
 #endif //CULTIVATED_COMPILER_INSTRUCTION_GENERATORS_H

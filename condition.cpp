@@ -44,8 +44,8 @@ void DiffCondition::generateConditionValue(Register *conditionRegister) {
 //____________________________LessThanCondition________________________________
 void LessThanCondition::generateConditionValue(Register *conditionRegister) {
     Register* firstHelperRegister = memory->getFreeRegister();
-    Command::loadValueToRegister(conditionRegister, value2); // conditionRegister has value1
-    Command::loadValueToRegister(firstHelperRegister, value1); // firstHelperRegister has value2
+    Command::loadValueToRegister(conditionRegister, value2); // conditionRegister has value2
+    Command::loadValueToRegister(firstHelperRegister, value1); // firstHelperRegister has value1
 
     code->sub(conditionRegister->getName(), firstHelperRegister->getName()); // firstHelperRegister = value2 - value1
 
@@ -66,4 +66,30 @@ void GreaterThanCondition::generateConditionValue(Register *conditionRegister) {
     //here we add jzero that skips commands specified in command if it hits zero
     code->jzero(conditionRegister->getName(), 2);
     code->jump(2);// this jumps over big jump that skips all commands if jzero before didn't execute
+}
+
+
+//____________________________LessEqualCondition_______________________________
+void LessEqualCondition::generateConditionValue(Register *conditionRegister) {
+    Register* firstHelperRegister = memory->getFreeRegister();
+    Command::loadValueToRegister(conditionRegister, value1); // conditionRegister has value1
+    Command::loadValueToRegister(firstHelperRegister, value2); // firstHelperRegister has value2
+
+    code->sub(conditionRegister->getName(), firstHelperRegister->getName()); // firstHelperRegister = value1 - value2
+
+    //here we add jzero that skips jump that skips all commands if its zero
+    code->jzero(conditionRegister->getName(), 2);
+}
+
+
+//____________________________GreaterThanCondition_______________________________
+void GreaterEqualCondition::generateConditionValue(Register *conditionRegister) {
+    Register* firstHelperRegister = memory->getFreeRegister();
+    Command::loadValueToRegister(conditionRegister, value2); // conditionRegister has value2
+    Command::loadValueToRegister(firstHelperRegister, value1); // firstHelperRegister has value1
+
+    code->sub(conditionRegister->getName(), firstHelperRegister->getName()); // firstHelperRegister = value2 - value1
+
+    //here we add jzero that skips jump that skips all commands if its zero
+    code->jzero(conditionRegister->getName(), 2);
 }
