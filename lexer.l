@@ -51,6 +51,7 @@ punctuation [\(\)\:\;\,]
 ":="                {return IS;}
 
 "="                 {return EQ;}
+"!="                {return DIF;}
 "<"                 {return LT;}
 ">"                 {return GT;}
 "<="                {return EQLT;}

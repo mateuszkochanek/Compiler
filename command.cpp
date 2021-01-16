@@ -127,10 +127,10 @@ void IfCommand::generateInstructions() {
         (*commandList)[i]->generateInstructions();
     }
     int instructionCoutAfterCommands = code->getInstructionCount();
-    code->putInstructionAtIndex(new Instruction("JZERO", conditionRegister->getName(), std::to_string(2)),
-                                instructionCoutBeforeCommands);
+    //code->putInstructionAtIndex(new Instruction("JZERO", conditionRegister->getName(), std::to_string(2)),
+    //                            instructionCoutBeforeCommands);
     code->putInstructionAtIndex(
-            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCoutBeforeCommands)),
-            instructionCoutBeforeCommands+1);
+            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCoutBeforeCommands + 1)),
+            instructionCoutBeforeCommands/*+1*/);
     memory->freeRegisters();
 }

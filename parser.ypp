@@ -100,7 +100,7 @@ expression
 
 condition
 : value EQ value        {$$ = new EqualCondition($1, $3);}
-| value DIF value       {}
+| value DIF value       {$$ = new DiffCondition($1, $3);}
 | value LT value        {}
 | value GT value        {}
 | value EQGT value      {}
