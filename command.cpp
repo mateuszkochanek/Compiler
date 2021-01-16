@@ -120,17 +120,51 @@ void IfCommand::generateInstructions() {
 
     Register *conditionRegister = memory->getFreeRegister();
     condition->generateConditionValue(conditionRegister);
-    int instructionCoutBeforeCommands = code->getInstructionCount();
+    int instructionCountBeforeCommands = code->getInstructionCount();
     memory->freeRegisters();
     int size = this->commandList->size();
     for (int i = 0; i < size; i++) {
         (*commandList)[i]->generateInstructions();
     }
     int instructionCoutAfterCommands = code->getInstructionCount();
-    //code->putInstructionAtIndex(new Instruction("JZERO", conditionRegister->getName(), std::to_string(2)),
-    //                            instructionCoutBeforeCommands);
+
     code->putInstructionAtIndex(
-            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCoutBeforeCommands + 1)),
-            instructionCoutBeforeCommands/*+1*/);
+            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCountBeforeCommands + 1)),
+            instructionCountBeforeCommands);
+    memory->freeRegisters();
+}
+
+
+//_____________________________IfElseCommand________________________________
+void IfElseCommand::generateInstructions() {
+
+    Register *conditionRegister = memory->getFreeRegister();
+    condition->generateConditionValue(conditionRegister);
+
+    int instructionCountBeforeIfCommands = code->getInstructionCount();
+    memory->freeRegisters();
+    int sizeIf = this->commandListIf->size();
+    for (int i = 0; i < sizeIf; i++) {
+        (*commandListIf)[i]->generateInstructions();
+    }
+
+    int instructionCountBeforeElseCommands = code->getInstructionCount();
+    memory->freeRegisters();
+    int sizeElse = this->commandListElse->size();
+    for (int i = 0; i < sizeElse; i++) {
+        (*commandListElse)[i]->generateInstructions();
+    }
+
+    int instructionCountAfterCommands = code->getInstructionCount();
+
+    code->putInstructionAtIndex( // Jump that skips If commands
+            new Instruction("JUMP",
+                            std::to_string(instructionCountBeforeElseCommands - instructionCountBeforeIfCommands + 2)),
+            instructionCountBeforeIfCommands);
+    memory->freeRegisters();
+    code->putInstructionAtIndex( // Jump that skips Else commands when if commands finished
+            new Instruction("JUMP",
+                            std::to_string(instructionCountAfterCommands - instructionCountBeforeElseCommands + 1)),
+            instructionCountBeforeElseCommands + 1);
     memory->freeRegisters();
 }

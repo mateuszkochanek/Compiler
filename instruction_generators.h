@@ -12,7 +12,9 @@
 #include "tokens.h"
 
 class Command;
+
 class Expression;
+
 class Condition;
 
 extern Memory *memory;
@@ -79,6 +81,22 @@ public:
 private:
     Condition *condition;
     CommandList *commandList;
+};
+
+class IfElseCommand : public Command {
+public:
+    explicit IfElseCommand(Condition *tCondition, CommandList *tCommandListIf, CommandList *tCommandListElse) {
+        this->condition = tCondition;
+        this->commandListIf = tCommandListIf;
+        this->commandListElse = tCommandListElse;
+    };
+
+    void generateInstructions() override;
+
+private:
+    Condition *condition;
+    CommandList *commandListIf;
+    CommandList *commandListElse;
 };
 
 
@@ -159,7 +177,7 @@ public:
     virtual void generateConditionValue(Register *resultRegister) { throw "in virtual method of Condition"; }
 };
 
-class EqualCondition: public Condition {
+class EqualCondition : public Condition {
 public:
     explicit EqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
@@ -170,7 +188,7 @@ private:
     Value *value2;
 };
 
-class DiffCondition: public Condition {
+class DiffCondition : public Condition {
 public:
     explicit DiffCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
@@ -181,7 +199,7 @@ private:
     Value *value2;
 };
 
-class LessThanCondition: public Condition {
+class LessThanCondition : public Condition {
 public:
     explicit LessThanCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
@@ -192,7 +210,7 @@ private:
     Value *value2;
 };
 
-class GreaterThanCondition: public Condition {
+class GreaterThanCondition : public Condition {
 public:
     explicit GreaterThanCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
@@ -203,7 +221,7 @@ private:
     Value *value2;
 };
 
-class LessEqualCondition: public Condition {
+class LessEqualCondition : public Condition {
 public:
     explicit LessEqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
@@ -214,7 +232,7 @@ private:
     Value *value2;
 };
 
-class GreaterEqualCondition: public Condition {
+class GreaterEqualCondition : public Condition {
 public:
     explicit GreaterEqualCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
