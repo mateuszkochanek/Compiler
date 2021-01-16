@@ -101,8 +101,8 @@ expression
 condition
 : value EQ value        {$$ = new EqualCondition($1, $3);}
 | value DIF value       {$$ = new DiffCondition($1, $3);}
-| value LT value        {}
-| value GT value        {}
+| value LT value        {$$ = new LessThanCondition($1, $3);}
+| value GT value        {$$ = new GreaterThanCondition($1, $3);}
 | value EQGT value      {}
 | value EQLT value      {}
 ;

@@ -181,4 +181,26 @@ private:
     Value *value2;
 };
 
+class LessThanCondition: public Condition {
+public:
+    explicit LessThanCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateConditionValue(Register *conditionRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
+class GreaterThanCondition: public Condition {
+public:
+    explicit GreaterThanCondition(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateConditionValue(Register *conditionRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
 #endif //CULTIVATED_COMPILER_INSTRUCTION_GENERATORS_H
