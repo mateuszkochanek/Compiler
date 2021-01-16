@@ -99,6 +99,20 @@ private:
     CommandList *commandListElse;
 };
 
+class WhileCommand : public Command {
+public:
+    explicit WhileCommand(Condition *tCondition, CommandList *tCommandList) {
+        this->condition = tCondition;
+        this->commandList = tCommandList;
+    };
+
+    void generateInstructions() override;
+
+private:
+    Condition *condition;
+    CommandList *commandList;
+};
+
 
 //___________________________Expressions______________________________
 class Expression {

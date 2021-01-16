@@ -168,3 +168,24 @@ void IfElseCommand::generateInstructions() {
             instructionCountBeforeElseCommands + 1);
     memory->freeRegisters();
 }
+
+
+//______________________________WhileCommand_________________________________
+void WhileCommand::generateInstructions() { // very similar to if, just add jump that jumps before condition
+    int instructionCountBeforeCondition = code->getInstructionCount();
+    Register *conditionRegister = memory->getFreeRegister();
+    condition->generateConditionValue(conditionRegister);
+    int instructionCountBeforeCommands = code->getInstructionCount();
+    memory->freeRegisters();
+    int size = this->commandList->size();
+    for (int i = 0; i < size; i++) {
+        (*commandList)[i]->generateInstructions();
+    }
+    int instructionCoutAfterCommands = code->getInstructionCount();
+    code->jump(-(instructionCoutAfterCommands-instructionCountBeforeCondition + 1)); // +1 bcs of put instruction below
+
+    code->putInstructionAtIndex(
+            new Instruction("JUMP", std::to_string(instructionCoutAfterCommands - instructionCountBeforeCommands + 2)),
+            instructionCountBeforeCommands);
+    memory->freeRegisters();
+}
