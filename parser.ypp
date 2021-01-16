@@ -94,7 +94,7 @@ expression
 | value ADD value       {$$ = new AddExpression($1, $3);}
 | value SUB value       {$$ = new SubExpression($1, $3);}
 | value MUL value       {$$ = new MulExpression($1, $3);}
-| value DIV value       {}
+| value DIV value       {$$ = new DivExpression($1, $3);}
 | value MOD value       {}
 ;
 
