@@ -98,19 +98,30 @@ void CodeWriter::shl(std::string tRegName) {
     this->instructionCount++;
 }
 
-void CodeWriter::jump(uint j) {
-
+void CodeWriter::jump(int j) {
+    this->instructionList.push_back(new Instruction("JUMP", std::to_string(j)));
+    this->instructionCount++;
 }
 
-void CodeWriter::jzero(std::string tRegName, uint j) {
-
+void CodeWriter::jzero(std::string tRegName, int j) {
+    this->instructionList.push_back(new Instruction("JZERO", tRegName, std::to_string(j)));
+    this->instructionCount++;
 }
 
-void CodeWriter::jodd(std::string tRegName, uint j) {
-
+void CodeWriter::jodd(std::string tRegName, int j) {
+    this->instructionList.push_back(new Instruction("JODD", tRegName, std::to_string(j)));
+    this->instructionCount++;
 }
 
 void CodeWriter::halt() {
     this->instructionList.push_back(new Instruction("HALT"));
     this->instructionCount++;
+}
+
+uint CodeWriter::getInstructionCount() const {
+    return instructionCount;
+}
+
+void CodeWriter::setInstructionCount(uint instructionCount) {
+    CodeWriter::instructionCount = instructionCount;
 }

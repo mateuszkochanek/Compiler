@@ -21,9 +21,11 @@ struct Variable {
     Variable(uint tAddress, std::string tPid, uint tStart, uint tEnd) : address(tAddress), pid(std::move(tPid)),
                                                                         start(tStart),
                                                                         end(tEnd) { this->variableType = eVariableType::ARRAY; }
+
     // Constant variable declaration
     Variable(uint tAddress, std::string tPid, uint tValue) : address(tAddress),
-                                                                     pid(tPid), value(tValue) {this->variableType = eVariableType::CONSTANT;}
+                                                             pid(tPid),
+                                                             value(tValue) { this->variableType = eVariableType::CONSTANT; }
 
     eVariableType variableType;
     uint address;

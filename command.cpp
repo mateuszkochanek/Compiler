@@ -7,11 +7,11 @@
 // TODO maybe make it static with identifier as param? if so change WriteCommand constructor
 void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool checkInitialized) {
     if (tIdentifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
-        if(checkInitialized){Command::checkIfInitialized(tIdentifier);};
+        if (checkInitialized) { Command::checkIfInitialized(tIdentifier); };
         code->loadNumberToRegister(tAddressRegister->getName(), tIdentifier->variable->address);
     } else if (tIdentifier->type == eIdentifier::NUMBER_ARRAY_IDENTIFIER) {
         uint cellAdress = tIdentifier->array->address;
-        if(tIdentifier->index < tIdentifier->array->start || tIdentifier->index > tIdentifier->array->end){
+        if (tIdentifier->index < tIdentifier->array->start || tIdentifier->index > tIdentifier->array->end) {
             throw tIdentifier->array->pid + "wrong array range";
         }
         cellAdress += tIdentifier->index - tIdentifier->array->start;
@@ -27,12 +27,13 @@ void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIde
                   helperRegister->getName());// add to array address index variable numValue
         code->loadNumberToRegister(helperRegister->getName(), tIdentifier->array->start);// load to register array start
         code->sub(tAddressRegister->getName(), helperRegister->getName());// sub array start from adressREgister
+        helperRegister->setFull(false);
     }
 }
 
 
 void Command::loadValueToRegister(Register *tValueRegister, Value *tValue) {
-    Register* adressRegister = memory->getFreeRegister();
+    Register *adressRegister = memory->getFreeRegister();
     if (tValue->type == eValue::IDENTIFIER_VALUE) { // numValue with some variable
         Command::loadIdentifierAddress(adressRegister, tValue->identifier, true);
         code->load(tValueRegister->getName(), adressRegister->getName());
@@ -41,13 +42,17 @@ void Command::loadValueToRegister(Register *tValueRegister, Value *tValue) {
             Command::loadIdentifierAddress(adressRegister, tValue->identifier, true);
             code->load(tValueRegister->getName(), adressRegister->getName());
         } else { // if const was never created, create, save it in memory and load it for our use
-            code->loadNumberToRegister(tValueRegister->getName(), tValue->numValue); // we load number value to our register
-            Command::loadIdentifierAddress(adressRegister, tValue->identifier, false); // we load constant address to our register
-            code->store(tValueRegister->getName(), adressRegister->getName()); // we store our value in address from addressREgister
+            code->loadNumberToRegister(tValueRegister->getName(),
+                                       tValue->numValue); // we load number value to our register
+            Command::loadIdentifierAddress(adressRegister, tValue->identifier,
+                                           false); // we load constant address to our register
+            code->store(tValueRegister->getName(),
+                        adressRegister->getName()); // we store our value in address from addressREgister
             tValue->identifier->variable->bInitialized = true; // constant is initialized
             // our value is still in tValueRegister
         }
     }
+    adressRegister->setFull(false);
 }
 
 
@@ -77,7 +82,8 @@ void WriteCommand::generateInstructions() {
     } else { // numValue with a constant variable
         if (value->identifier->variable->bInitialized) {
             Command::loadIdentifierAddress(addressRegister,
-                                           this->value->identifier, false); // if constant was created before, load its address
+                                           this->value->identifier,
+                                           false); // if constant was created before, load its address
         } else { // if const was never created, create and save it in memory
             Register *helperRegister = memory->getFreeRegister();
             code->loadNumberToRegister(helperRegister->getName(), value->numValue);

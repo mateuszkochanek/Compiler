@@ -56,14 +56,17 @@ public:
 
     void shl(std::string tRegName);
 
-    void jump(uint j);
+    void jump(int j);
 
-    void jzero(std::string tRegName, uint j);
+    void jzero(std::string tRegName, int j);
 
-    void jodd(std::string tRegName, uint j);
+    void jodd(std::string tRegName, int j);
 
     void halt();
 
+    uint getInstructionCount() const;
+
+    void setInstructionCount(uint instructionCount);
 
 private:
     std::vector<Instruction *> instructionList;

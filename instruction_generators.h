@@ -81,7 +81,7 @@ private:
 
 class AddExpression : public Expression {
 public:
-    explicit AddExpression(Value *tValue1, Value *tValue2) : value1(tValue1),value2(tValue2) {};
+    explicit AddExpression(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
     void generateExpressionValue(Register *resultRegister) override;
 
@@ -92,7 +92,29 @@ private:
 
 class SubExpression : public Expression {
 public:
-    explicit SubExpression(Value *tValue1, Value *tValue2) : value1(tValue1),value2(tValue2) {};
+    explicit SubExpression(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateExpressionValue(Register *resultRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
+class MulExpression : public Expression {
+public:
+    explicit MulExpression(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
+
+    void generateExpressionValue(Register *resultRegister) override;
+
+private:
+    Value *value1;
+    Value *value2;
+};
+
+class DivExpression : public Expression {
+public:
+    explicit DivExpression(Value *tValue1, Value *tValue2) : value1(tValue1), value2(tValue2) {};
 
     void generateExpressionValue(Register *resultRegister) override;
 
