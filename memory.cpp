@@ -19,6 +19,9 @@ void Memory::createRegisters() {
 
 Variable *Memory::getVariable(std::string tVarName) {
     checkIfDeclared(tVarName);
+    if(this->symbolTable[tVarName]->variableType == eVariableType::ITERATOR && !(this->symbolTable[tVarName]->isInsideLoop)){
+        throw tVarName + " was not declared";
+    }
     return symbolTable[tVarName];
 }
 
@@ -55,6 +58,7 @@ void Memory::declareIterator(std::string tPid) {
     if (symbolTable.find(tPid) == symbolTable.end()) { // if we cant find it, create it
         this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, eVariableType::ITERATOR);
         this->symbolTable[tPid]->bInitialized = true;
+        this->symbolTable[tPid]->isInsideLoop = true;
         this->memoryAddresses++;
         this->iteratorCount++;
     } else if(symbolTable[tPid]->isInsideLoop){ // if we can find it and it inside of a loop

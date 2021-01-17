@@ -19,7 +19,7 @@ int yylex();
 
 number [0-9]+
 pid [_a-z]+
-blank [\n\t \r]*
+blank [\t \r]*
 punctuation [\(\)\:\;\,]
 
 %%
@@ -66,12 +66,14 @@ punctuation [\(\)\:\;\,]
 {pid}               {yylval.pid = new string(yytext); return pidentifier;}
 {number}            {yylval.num = std::stoll(yytext); return num;}
 {punctuation}        {return yytext[0];}
+"\n"                {yylineno++;}
 
 "["                 {BEGIN(COMMENT);}
 <COMMENT>{
     "["                 ;
     "]"                 BEGIN(INITIAL);
     .                   ;
+    "\n"
 }
 {blank}             {}
 .                   ;

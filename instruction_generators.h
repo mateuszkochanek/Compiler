@@ -31,7 +31,7 @@ public:
 
     static void loadValueToRegister(Register *tAddressRegister, Value *tValue);
 
-    static void checkIfInitialized(Identifier *tIdentifier);
+    static void checkIfInitialized(Variable *tVaraiable);
 
 };
 

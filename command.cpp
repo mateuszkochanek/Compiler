@@ -7,20 +7,30 @@
 void Command::loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool checkIsInitialized) {
     if (tIdentifier->type == eIdentifier::VARIABLE_IDENTIFIER) {
         if (checkIsInitialized) {
-            Command::checkIfInitialized(tIdentifier);
+            Command::checkIfInitialized(tIdentifier->variable);
         }
         if (tIdentifier->variable->variableType == eVariableType::ITERATOR) {
-            throw tIdentifier->variable->pid + "is an array iterator";
+            throw tIdentifier->variable->pid + " is an array iterator";
+        }
+        if (tIdentifier->variable->variableType == eVariableType::ARRAY) {
+            throw  "wrong use of array variable " + tIdentifier->variable->pid;
         }
         code->loadNumberToRegister(tAddressRegister->getName(), tIdentifier->variable->address);
     } else if (tIdentifier->type == eIdentifier::NUMBER_ARRAY_IDENTIFIER) {
         uint cellAddress = tIdentifier->array->address;
+        if (tIdentifier->array->variableType == eVariableType::SINGLE) {
+            throw  "wrong use of variable " + tIdentifier->array->pid;
+        }
         if (tIdentifier->index < tIdentifier->array->start || tIdentifier->index > tIdentifier->array->end) {
-            throw tIdentifier->array->pid + "wrong array range";
+            throw tIdentifier->array->pid + " wrong array range";
         }
         cellAddress += tIdentifier->index - tIdentifier->array->start;
         code->loadNumberToRegister(tAddressRegister->getName(), cellAddress);
     } else {
+        if (tIdentifier->array->variableType == eVariableType::SINGLE) {
+            throw  "wrong use of variable " + tIdentifier->variable->pid;
+        }
+        Command::checkIfInitialized(tIdentifier->variable);
         Register *helperRegister = memory->getFreeRegister();
         code->loadNumberToRegister(helperRegister->getName(),
                                    tIdentifier->variable->address); //we load index variable address
@@ -68,9 +78,9 @@ void Command::loadValueToRegister(Register *tValueRegister, Value *tValue) {
 }
 
 
-void Command::checkIfInitialized(Identifier *tIdentifier) {
-    if (!(tIdentifier->variable->bInitialized)) {
-        throw tIdentifier->variable->pid + "was not initialized";
+void Command::checkIfInitialized(Variable *tVaraiable) {
+    if (!(tVaraiable->bInitialized)) {
+        throw tVaraiable->pid + " was not initialized";
     }
 }
 
@@ -231,6 +241,7 @@ void RepeatCommand::generateInstructions() { // very similar to if, just add jum
 //_______________________________ForCommand__________________________________
 void ForCommand::generateInstructions() {
     // create iterator variable and iterator identifier with this variable
+    memory->getIterator(pid)->isInsideLoop = true;
     Value *iteratorValue = new Value(new Identifier(pid)); // we have value created
 
     Register *valueRegister = memory->getFreeRegister();
@@ -282,6 +293,71 @@ void ForCommand::generateInstructions() {
             instructionCountBeforeCommands);
 
     memory->freeRegisters();
+
+    memory->getIterator(pid)->isInsideLoop = false;
+    if (value2->type != eValue::NUMBER_VALUE)
+        memory->eraseIterator(iteratorEndPid);
+
+}
+
+
+//_____________________________ForDowntoCommand________________________________
+void ForDowntoCommand::generateInstructions() {
+    // create iterator variable and iterator identifier with this variable
+    memory->getIterator(pid)->isInsideLoop = true;
+    Value *iteratorValue = new Value(new Identifier(pid)); // we have value created
+
+    Register *valueRegister = memory->getFreeRegister();
+    Register *addressRegister = memory->getFreeRegister();
+    Command::loadValueToRegister(valueRegister, value1); // we load starting value to register
+    code->loadNumberToRegister(addressRegister->getName(),
+                               iteratorValue->identifier->variable->address); //we load iterator address to register
+    code->store(valueRegister->getName(), addressRegister->getName()); // we store starting iterator val in iterator
+    iteratorValue->identifier->variable->bInitialized = true;
+
+    std::string iteratorEndPid = pid + std::to_string(memory->iteratorCount);
+    // if value2 is NUMBER_VALUE we dont have to do anything (our ending point is a constant and wont change inside a loop)
+    if (value2->type != eValue::NUMBER_VALUE) {// if value2 is VARIABLE_IDENTIFIER
+        Command::loadValueToRegister(valueRegister, value2);
+        memory->declareIterator(iteratorEndPid);
+        Value *iteratorEndValue = new Value(new Identifier(iteratorEndPid));
+        Command::loadValueToRegister(valueRegister, value2); // we load ending value to register
+        code->loadNumberToRegister(addressRegister->getName(),
+                                   iteratorEndValue->identifier->variable->address); //we load iterator address to register
+        code->store(valueRegister->getName(), addressRegister->getName()); // we store starting iterator val in iterator
+        this->value2 = iteratorEndValue;
+    }
+    memory->freeRegisters(); // we have both values prepared for for loop
+
+    int instructionCountBeforeCondition = code->getInstructionCount();
+    GreaterEqualCondition *endingCondition = new GreaterEqualCondition(iteratorValue, this->value2);
+    valueRegister = memory->getFreeRegister();
+    endingCondition->generateConditionValue(valueRegister);
+    memory->freeRegisters();
+
+    int instructionCountBeforeCommands = code->getInstructionCount();
+    int size = this->commandList->size();
+    for (int i = 0; i < size; i++) {
+        (*commandList)[i]->generateInstructions();
+    }
+    valueRegister = memory->getFreeRegister();
+    addressRegister = memory->getFreeRegister();
+    code->loadNumberToRegister(addressRegister->getName(),
+                               iteratorValue->identifier->variable->address); // we load iterator address
+    code->load(valueRegister->getName(), addressRegister->getName()); // we load iterator value
+    code->jzero(valueRegister->getName(), 4);
+    code->dec(valueRegister->getName()); // we increase value
+    code->store(valueRegister->getName(), addressRegister->getName()); //we store the value
+    int instructionCountAfterCommands = code->getInstructionCount();
+    code->jump(
+            -(instructionCountAfterCommands - instructionCountBeforeCondition + 1)); // +1 bcs of put instruction below
+
+    code->putInstructionAtIndex(
+            new Instruction("JUMP", std::to_string(instructionCountAfterCommands - instructionCountBeforeCommands + 2)),
+            instructionCountBeforeCommands);
+
+    memory->freeRegisters();
+    memory->getIterator(pid)->isInsideLoop = false;
     if (value2->type != eValue::NUMBER_VALUE)
         memory->eraseIterator(iteratorEndPid);
 
