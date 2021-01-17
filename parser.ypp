@@ -82,7 +82,7 @@ command
 | IF condition THEN commands ELSE commands ENDIF                {$$ = new IfElseCommand($2, $4, $6);}
 | IF condition THEN commands ENDIF                              {$$ = new IfCommand($2, $4);}
 | WHILE condition DO commands ENDWHILE                          {$$ = new WhileCommand($2, $4);}
-| REPEAT commands UNTIL condition ';'                           {}
+| REPEAT commands UNTIL condition ';'                           {$$ = new RepeatCommand($4, $2);}
 | FOR pidentifier FROM value TO value DO commands ENDFOR        {}
 | FOR pidentifier FROM value DOWNTO value DO commands ENDFOR    {}
 | READ identifier ';'                                           {$$ = new ReadCommand($2);}

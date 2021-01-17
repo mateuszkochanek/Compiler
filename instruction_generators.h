@@ -113,6 +113,20 @@ private:
     CommandList *commandList;
 };
 
+class RepeatCommand : public Command {
+public:
+    explicit RepeatCommand(Condition *tCondition, CommandList *tCommandList) {
+        this->condition = tCondition;
+        this->commandList = tCommandList;
+    };
+
+    void generateInstructions() override;
+
+private:
+    Condition *condition;
+    CommandList *commandList;
+};
+
 
 //___________________________Expressions______________________________
 class Expression {

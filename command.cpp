@@ -189,3 +189,20 @@ void WhileCommand::generateInstructions() { // very similar to if, just add jump
             instructionCountBeforeCommands);
     memory->freeRegisters();
 }
+
+
+//______________________________RepeatCommand_________________________________
+void RepeatCommand::generateInstructions() { // very similar to if, just add jump that jumps before condition
+    int instructionCountBeforeCommands = code->getInstructionCount();
+    int size = this->commandList->size();
+    for (int i = 0; i < size; i++) {
+        (*commandList)[i]->generateInstructions();
+    }
+    Register *conditionRegister = memory->getFreeRegister();
+    condition->generateConditionValue(conditionRegister);
+    memory->freeRegisters();
+    int instructionCountAfterCommands = code->getInstructionCount();
+    code->jump(-(instructionCountAfterCommands-instructionCountBeforeCommands));
+
+    memory->freeRegisters();
+}
