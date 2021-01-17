@@ -10,17 +10,23 @@
 extern Memory *memory;
 
 enum eIdentifier {
-    VARIABLE_IDENTIFIER, VARIABLE_ARRAY_IDENTIFIER, NUMBER_ARRAY_IDENTIFIER
+    VARIABLE_IDENTIFIER, VARIABLE_ARRAY_IDENTIFIER, NUMBER_ARRAY_IDENTIFIER, ITERATOR_IDENTIFIER
 };
 
 enum eValue {
-    NUMBER_VALUE, IDENTIFIER_VALUE
+    NUMBER_VALUE, IDENTIFIER_VALUE, ITERATOR_VALUE
 };
 
 struct Identifier {
     // Identifier for single fariables
     explicit Identifier(std::string tVarPid) {
         this->type = eIdentifier::VARIABLE_IDENTIFIER;
+        this->variable = memory->getVariable(tVarPid);
+    };
+
+    // Identifier for identifiers created in commands, mostly iterators TODO delete it and enum type
+    explicit Identifier(std::string tVarPid, eIdentifier tType) {
+        this->type = tType;
         this->variable = memory->getVariable(tVarPid);
     };
 
@@ -53,8 +59,12 @@ struct Value {
         this->identifier = new Identifier(constPid);
     };
 
+    // Value for Identifier created from commands, mostyly iterators TODO delete it and enum type
+    Value(Identifier *tIdentifier, eValue tType) : identifier(tIdentifier), type(tType) {};
+
     // Value for Identifier input
     explicit Value(Identifier *tIdentifier) : identifier(tIdentifier) { this->type = eValue::IDENTIFIER_VALUE; };
+
 
     eValue type;
     uint numValue{0};

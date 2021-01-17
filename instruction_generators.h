@@ -27,7 +27,7 @@ class Command {
 public:
     virtual void generateInstructions() { throw "in virtual method od Command"; }
 
-    static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool checkInitialized);
+    static void loadIdentifierAddress(Register *tAddressRegister, Identifier *tIdentifier, bool loadAddressToSave);
 
     static void loadValueToRegister(Register *tAddressRegister, Value *tValue);
 
@@ -124,6 +124,42 @@ public:
 
 private:
     Condition *condition;
+    CommandList *commandList;
+};
+
+class ForCommand : public Command {
+public:
+    explicit ForCommand(std::string tPid,Value *tValue1, Value *tValue2, CommandList *tCommandList) {
+        this->pid = tPid;
+        this->value1 = tValue1;
+        this->value2 = tValue2;
+        this->commandList = tCommandList;
+    };
+
+    void generateInstructions() override;
+
+private:
+    std::string pid;
+    Value* value1;
+    Value* value2;
+    CommandList *commandList;
+};
+
+class ForDowntoCommand : public Command {
+public:
+    explicit ForDowntoCommand(std::string tPid,Value *tValue1, Value *tValue2, CommandList *tCommandList) {
+        this->pid = tPid;
+        this->value1 = tValue1;
+        this->value2 = tValue2;
+        this->commandList = tCommandList;
+    };
+
+    void generateInstructions() override;
+
+private:
+    std::string pid;
+    Value* value1;
+    Value* value2;
     CommandList *commandList;
 };
 

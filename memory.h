@@ -46,11 +46,17 @@ public:
 
     void declareConstant(std::string tPid, uint value);
 
+    void declareIterator(std::string tPid);
+
+    void eraseIterator(std::string tPid);
+
+    Variable* getIterator(std::string tPid);
+
     void freeRegisters();
 
     Register *getFreeRegister();
 
-
+    uint iteratorCount{0};
 private:
     void createRegisters();
 

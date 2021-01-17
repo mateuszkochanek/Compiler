@@ -9,7 +9,7 @@
 #include <utility>
 
 enum eVariableType {
-    ARRAY, SINGLE, CONSTANT
+    ARRAY, SINGLE, CONSTANT, ITERATOR
 };
 
 struct Variable {
@@ -23,9 +23,9 @@ struct Variable {
                                                                         end(tEnd) { this->variableType = eVariableType::ARRAY; }
 
     // Constant variable declaration
-    Variable(uint tAddress, std::string tPid, uint tValue) : address(tAddress),
+    Variable(uint tAddress, std::string tPid, eVariableType tType) : address(tAddress),
                                                              pid(tPid),
-                                                             value(tValue) { this->variableType = eVariableType::CONSTANT; }
+                                                             variableType(tType) {}
 
     eVariableType variableType;
     uint address;
@@ -41,6 +41,9 @@ struct Variable {
     // needed for error checks
     bool bInitialized{false};
     bool bDeclared{true};
+
+    // need for iterator
+    bool isInsideLoop{true};
 
 };
 

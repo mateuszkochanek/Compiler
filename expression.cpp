@@ -61,6 +61,7 @@ void MulExpression::generateExpressionValue(Register *resultRegister) {
 
 //____________________________DivExpression________________________________
 void DivExpression::generateExpressionValue(Register *resultRegister) {
+    // TODO optymalization for division by powers of 2 and 1.
     Register *dividentRegister = memory->getFreeRegister(); // we will have reminder here
     Register *divisorRegister = memory->getFreeRegister();
     Register *multiplyRegister = memory->getFreeRegister();
@@ -123,8 +124,9 @@ void DivExpression::generateExpressionValue(Register *resultRegister) {
 }
 
 
-//____________________________DivExpression________________________________
+//____________________________ModExpression________________________________
 void ModExpression::generateExpressionValue(Register *dividentRegister) { // this register has our reminder
+    // TODO optymalization for division by powers of 2 and 1.
     Register *resultRegister = memory->getFreeRegister(); // this is register with relulst of divide
     Register *divisorRegister = memory->getFreeRegister();
     Register *multiplyRegister = memory->getFreeRegister();

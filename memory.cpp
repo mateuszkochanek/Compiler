@@ -46,9 +46,27 @@ void Memory::declareArray(std::string tPid, uint tStart, uint tEnd) {
 
 void Memory::declareConstant(std::string tPid, uint value) {
     if (symbolTable.find(tPid) == symbolTable.end()) {
-        this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, value);
+        this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, eVariableType::CONSTANT);
         this->memoryAddresses++;
     }
+}
+
+void Memory::declareIterator(std::string tPid) {
+    if (symbolTable.find(tPid) == symbolTable.end()) { // if we cant find it, create it
+        this->symbolTable[tPid] = new Variable(this->memoryAddresses, tPid, eVariableType::ITERATOR);
+        this->symbolTable[tPid]->bInitialized = true;
+        this->memoryAddresses++;
+        this->iteratorCount++;
+    } else if(symbolTable[tPid]->isInsideLoop){ // if we can find it and it inside of a loop
+        throw tPid + " is already declared";
+    } else { //we can find it, but outside of a loop
+        symbolTable[tPid]->isInsideLoop = true;
+    }
+}
+
+void Memory::eraseIterator(std::string tPid) {
+    this->symbolTable.erase(tPid);
+    this->iteratorCount--;
 }
 
 void Memory::freeRegisters() { // TODO i think i should do freeing only specified registers
@@ -68,5 +86,9 @@ Register *Memory::getFreeRegister() {
         }
     }
     throw "no more registers rry"; //TODO jezeli wszystkie pełne wyrzucać cos do zmiennej w pamięci? ale nie powinno tak być
+}
+
+Variable* Memory::getIterator(std::string tPid) {
+    return symbolTable[tPid];
 }
 

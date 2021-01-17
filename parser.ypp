@@ -83,8 +83,10 @@ command
 | IF condition THEN commands ENDIF                              {$$ = new IfCommand($2, $4);}
 | WHILE condition DO commands ENDWHILE                          {$$ = new WhileCommand($2, $4);}
 | REPEAT commands UNTIL condition ';'                           {$$ = new RepeatCommand($4, $2);}
-| FOR pidentifier FROM value TO value DO commands ENDFOR        {}
-| FOR pidentifier FROM value DOWNTO value DO commands ENDFOR    {}
+| FOR pidentifier FROM value TO value                           {memory->declareIterator(*$2);}
+  DO commands ENDFOR                                            {$$ = new ForCommand(*$2, $4, $6, $9);memory->getIterator(*$2)->isInsideLoop=false;}
+| FOR pidentifier FROM value DOWNTO value                       {memory->declareIterator(*$2);}
+  DO commands ENDFOR                                            {$$ = new ForDowntoCommand(*$2, $4, $6, $9);memory->getIterator(*$2)->isInsideLoop=false;}
 | READ identifier ';'                                           {$$ = new ReadCommand($2);}
 | WRITE value ';'                                               {$$ = new WriteCommand($2);}
 ;
